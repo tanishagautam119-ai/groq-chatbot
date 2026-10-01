@@ -52,3 +52,6 @@ The `.env` file is added to `.gitignore` so the API key is not uploaded to GitHu
 ## 👩‍💻 Author
 
 Tanisha Gautam
+## 🖼️ Chatbot Preview
+
+![Groq AI Chatbot](chatbot-screenshot.png)
