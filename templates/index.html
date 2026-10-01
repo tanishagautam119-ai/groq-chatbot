@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My AI Chatbot</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #212121;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            height: 60px;
+            background: #171717;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Chat Area */
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 20px;
+        }
+
+        .message {
+            max-width: 800px;
+            margin: 15px auto;
+            padding: 15px 18px;
+            border-radius: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .user {
+            background: #2f2f2f;
+        }
+
+        .bot {
+            background: #444654;
+        }
+
+        /* Input Area */
+        .input-container {
+            padding: 20px;
+            background: #212121;
+        }
+
+        .input-box {
+            max-width: 800px;
+            margin: auto;
+            display: flex;
+            background: #2f2f2f;
+            border: 1px solid #555;
+            border-radius: 15px;
+            padding: 8px;
+        }
+
+        #message {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 16px;
+            padding: 12px;
+        }
+
+        #message::placeholder {
+            color: #aaa;
+        }
+
+        button {
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            padding: 0 18px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ddd;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            header {
+                font-size: 17px;
+            }
+
+            #chat-box {
+                padding: 15px 10px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        🤖 My AI Chatbot
+    </header>
+
+    <div id="chat-box">
+
+        <div class="message bot">
+            Hello! 👋 I'm your AI assistant. How can I help you today?
+        </div>
+
+    </div>
+
+    <div class="input-container">
+
+        <div class="input-box">
+
+            <input
+                type="text"
+                id="message"
+                placeholder="Message your AI..."
+                autocomplete="off"
+            >
+
+            <button onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        async function sendMessage() {
+
+            const input = document.getElementById("message");
+            const chatBox = document.getElementById("chat-box");
+
+            const message = input.value.trim();
+
+            if (message === "") {
+                return;
+            }
+
+            // Show user message
+            chatBox.innerHTML += `
+                <div class="message user">
+                    ${message}
+                </div>
+            `;
+
+            input.value = "";
+
+            // Show thinking message
+            chatBox.innerHTML += `
+                <div class="message bot" id="thinking">
+                    Thinking... 🤔
+                </div>
+            `;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+
+                const data = await response.json();
+
+                document.getElementById("thinking").remove();
+
+                chatBox.innerHTML += `
+                    <div class="message bot">
+                        ${data.reply}
+                    </div>
+                `;
+
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch (error) {
+
+                document.getElementById("thinking").innerText =
+                    "Sorry, something went wrong. 😕";
+
+            }
+        }
+
+        // Press Enter to send
+        document.getElementById("message").addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+                    sendMessage();
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
